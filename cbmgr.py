@@ -72,23 +72,24 @@ def process_services(services, enterprise):
         #backward compatible when using ";" as separator
         sep = ";"
     svc_set = set([w.strip() for w in services.split(sep)])
-    svc_candidate = ["data", "index", "query", "fts", "eventing", "analytics"]
+    svc_candidate = ["data", "index", "query", "fts", "eventing", "analytics", "mobile_service"]
     for svc in svc_set:
         if svc not in svc_candidate:
             return None, ["`%s` is not a valid service" % svc]
         if not enterprise and svc in ["eventing", "analytics"]:
             return None, ["{0} service is only available on Enterprise Edition".format(svc)]
 
-    if not enterprise:
-        # Valid CE node service configuration
-        ce_svc_30 = set(["data"])
-        ce_svc_40 = set(["data", "index", "query"])
-        ce_svc_45 = set(["data", "index", "query", "fts"])
-        if svc_set not in [ce_svc_30, ce_svc_40, ce_svc_45]:
-            return None, ["Invalid service configuration. Community Edition only supports nodes with the following"
-                          " combinations of services: '{0}', '{1}' or '{2}'".format(''.join(ce_svc_30),
-                                                                                    ','.join(ce_svc_40),
-                                                                                    ','.join(ce_svc_45))]
+    # if not enterprise:
+    #     # Valid CE node service configuration
+    #     print("svc_set: {}".format(svc_set))
+    #     ce_svc_30 = set(["data", "mobile_service"])
+    #     ce_svc_40 = set(["data", "index", "query", "mobile_service"])
+    #     ce_svc_45 = set(["data", "index", "query", "fts", "mobile_service"])
+    #     if svc_set not in [ce_svc_30, ce_svc_40, ce_svc_45]:
+    #         return None, ["Invalid service configuration. Community Edition only supports nodes with the following"
+    #                       " combinations of services: '{0}', '{1}' or '{2}'".format(''.join(ce_svc_30),
+    #                                                                                 ','.join(ce_svc_40),
+    #                                                                                 ','.join(ce_svc_45))]
 
     services = ",".join(svc_set)
     for old, new in [[";", ","], ["data", "kv"], ["query", "n1ql"], ["analytics", "cbas"]]:
